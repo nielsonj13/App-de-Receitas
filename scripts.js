@@ -1,74 +1,74 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const submitButton = document.getElementById('submit-recipe');
+    const botaoEnviar = document.getElementById('enviar-receita');
 
-    submitButton.addEventListener('click', () => {
-        const title = document.getElementById('title').value;
-        const ingredients = document.getElementById('ingredients').value;
-        const instructions = document.getElementById('instructions').value;
-        const category = document.getElementById('category').value;
-        const author = document.getElementById('author').value;
+    botaoEnviar.addEventListener('click', () => {
+        const titulo = document.getElementById('titulo').value;
+        const ingredientes = document.getElementById('ingredientes').value;
+        const instrucoes = document.getElementById('instrucoes').value;
+        const categoria = document.getElementById('categoria').value;
+        const autor = document.getElementById('autor').value;
 
-        if (title && ingredients && instructions && category && author) {
-            const recipe = { title, ingredients, instructions, category, author };
-            addRecipe(recipe);
-            loadRecipes();
-            clearForm();
+        if (titulo && ingredientes && instrucoes && categoria && autor) {
+            const receita = { titulo, ingredientes, instrucoes, categoria, autor };
+            adicionarReceita(receita);
+            carregarReceitas();
+            limparFormulario();
         } else {
-            alert('Por favor preencha todos os campos.');
+            alert('Por favor, preencha todos os campos.');
         }
     });
 
-    function addRecipe(recipe) {
-        let recipes = getRecipes();
-        recipes.push(recipe);
-        localStorage.setItem('recipes', JSON.stringify(recipes));
+    function adicionarReceita(receita) {
+        let receitas = obterReceitas();
+        receitas.push(receita);
+        localStorage.setItem('receitas', JSON.stringify(receitas));
     }
 
-    function getRecipes() {
-        return localStorage.getItem('recipes') ? JSON.parse(localStorage.getItem('recipes')) : [];
+    function obterReceitas() {
+        return localStorage.getItem('receitas') ? JSON.parse(localStorage.getItem('receitas')) : [];
     }
 
-    function loadRecipes() {
-        const recipes = getRecipes();
-        const recipesContainer = document.getElementById('recipes');
-        recipesContainer.innerHTML = '';
-        recipes.forEach((recipe, index) => {
-            const recipeDiv = document.createElement('div');
-            recipeDiv.classList.add('recipe');
-            recipeDiv.innerHTML = `
-                <h2>${recipe.title}</h2>
-                <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
-                <p><strong>Instructions:</strong> ${recipe.instructions}</p>
-                <p><strong>Category:</strong> ${recipe.category}</p>
-                <p><strong>Author:</strong> ${recipe.author}</p>
-                <button class="delete-recipe" data-index="${index}">Excluir</button>
+    function carregarReceitas() {
+        const receitas = obterReceitas();
+        const containerReceitas = document.getElementById('receitas');
+        containerReceitas.innerHTML = '';
+        receitas.forEach((receita, indice) => {
+            const divReceita = document.createElement('div');
+            divReceita.classList.add('receita');
+            divReceita.innerHTML = `
+                <h2>${receita.titulo}</h2>
+                <p><strong>Ingredientes:</strong> ${receita.ingredientes}</p>
+                <p><strong>Instruções:</strong> ${receita.instrucoes}</p>
+                <p><strong>Categoria:</strong> ${receita.categoria}</p>
+                <p><strong>Autor:</strong> ${receita.autor}</p>
+                <button class="excluir-receita" data-indice="${indice}">Excluir Receita</button>
             `;
-            recipesContainer.appendChild(recipeDiv);
+            containerReceitas.appendChild(divReceita);
         });
 
-        const deleteButtons = document.querySelectorAll('.delete-recipe');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                const index = event.target.getAttribute('data-index');
-                deleteRecipe(index);
-                loadRecipes();
+        const botoesExcluir = document.querySelectorAll('.excluir-receita');
+        botoesExcluir.forEach(botao => {
+            botao.addEventListener('click', (evento) => {
+                const indice = evento.target.getAttribute('data-indice');
+                excluirReceita(indice);
+                carregarReceitas();
             });
         });
     }
 
-    function deleteRecipe(index) {
-        let recipes = getRecipes();
-        recipes.splice(index, 1);
-        localStorage.setItem('recipes', JSON.stringify(recipes));
+    function excluirReceita(indice) {
+        let receitas = obterReceitas();
+        receitas.splice(indice, 1);
+        localStorage.setItem('receitas', JSON.stringify(receitas));
     }
 
-    function clearForm() {
-        document.getElementById('title').value = '';
-        document.getElementById('ingredients').value = '';
-        document.getElementById('instructions').value = '';
-        document.getElementById('category').value = '';
-        document.getElementById('author').value = '';
+    function limparFormulario() {
+        document.getElementById('titulo').value = '';
+        document.getElementById('ingredientes').value = '';
+        document.getElementById('instrucoes').value = '';
+        document.getElementById('categoria').value = '';
+        document.getElementById('autor').value = '';
     }
 
-    loadRecipes();
+    carregarReceitas();
 });

@@ -19,12 +19,12 @@ body {
     border-radius: 5px;
 }
 
-#recipe-form {
+#formulario-receita {
     display: flex;
     flex-direction: column;
 }
 
-#recipe-form input, #recipe-form textarea {
+#formulario-receita input, #formulario-receita textarea {
     margin-bottom: 10px;
     padding: 10px;
     font-size: 1em;
@@ -32,7 +32,7 @@ body {
     border-radius: 3px;
 }
 
-#submit-recipe {
+#enviar-receita {
     padding: 10px;
     font-size: 1em;
     border: none;
@@ -42,11 +42,11 @@ body {
     border-radius: 3px;
 }
 
-#recipes {
+#receitas {
     margin-top: 20px;
 }
 
-.recipe {
+.receita {
     background: #fff;
     border: 1px solid #ddd;
     margin-bottom: 10px;
@@ -54,15 +54,15 @@ body {
     border-radius: 3px;
 }
 
-.recipe h2 {
+.receita h2 {
     margin: 0 0 10px;
 }
 
-.recipe p {
+.receita p {
     margin: 0;
 }
 
-.delete-recipe {
+.excluir-receita {
     margin-top: 10px;
     padding: 5px;
     font-size: 0.9em;
