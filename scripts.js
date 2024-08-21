@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const botaoEnviar = document.getElementById('enviar-receita');
     const botaoAtualizar = document.getElementById('atualizar-receita');
+    const campoPesquisa = document.getElementById('pesquisar');
     let indiceEdicao = null;
 
     botaoEnviar.addEventListener('click', () => {
@@ -40,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    campoPesquisa.addEventListener('input', () => {
+        carregarReceitas();
+    });
+
     function adicionarReceita(receita) {
         let receitas = obterReceitas();
         receitas.push(receita);
@@ -52,9 +57,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function carregarReceitas() {
         const receitas = obterReceitas();
+        const termoPesquisa = campoPesquisa.value.trim().toLowerCase();
         const containerReceitas = document.getElementById('receitas');
         containerReceitas.innerHTML = '';
-        receitas.forEach((receita, indice) => {
+        const receitasFiltradas = receitas.filter(receita =>
+            receita.titulo.toLowerCase().includes(termoPesquisa) ||
+            receita.ingredientes.toLowerCase().includes(termoPesquisa) ||
+            receita.instrucoes.toLowerCase().includes(termoPesquisa) ||
+            receita.categoria.toLowerCase().includes(termoPesquisa) ||
+            receita.autor.toLowerCase().includes(termoPesquisa)
+        );
+        receitasFiltradas.forEach((receita, indice) => {
             const divReceita = document.createElement('div');
             divReceita.classList.add('receita');
             divReceita.innerHTML = `
@@ -125,3 +138,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     carregarReceitas();
 });
+
