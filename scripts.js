@@ -139,3 +139,94 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarReceitas();
 });
 
+
+// Inicializando o Supabase
+const SUPABASE_URL = 'https://xyzcompany.supabase.co'; // substitua pelo URL do seu projeto
+const SUPABASE_KEY = 'public-anon-key'; // substitua pela sua chave de API
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function carregarReceitas() {
+    const { data: receitas, error } = await supabase
+        .from('receitas')
+        .select('*');
+
+    if (error) {
+        console.error('Erro ao carregar receitas:', error);
+        return;
+    }
+
+    const termoPesquisa = document.getElementById('pesquisar').value.trim().toLowerCase();
+    const containerReceitas = document.getElementById('receitas');
+    containerReceitas.innerHTML = '';
+
+    receitas
+        .filter(receita =>
+            receita.titulo.toLowerCase().includes(termoPesquisa) ||
+            receita.ingredientes.toLowerCase().includes(termoPesquisa) ||
+            receita.instrucoes.toLowerCase().includes(termoPesquisa) ||
+            receita.categoria.toLowerCase().includes(termoPesquisa) ||
+            receita.autor.toLowerCase().includes(termoPesquisa)
+        )
+        .forEach((receita) => {
+            const divReceita = document.createElement('div');
+            divReceita.classList.add('receita');
+            divReceita.innerHTML = `
+                <h2>${receita.titulo}</h2>
+                <p><strong>Ingredientes:</strong> ${receita.ingredientes}</p>
+                <p><strong>Instruções:</strong> ${receita.instrucoes}</p>
+                <p><strong>Categoria:</strong> ${receita.categoria}</p>
+                <p><strong>Autor:</strong> ${receita.autor}</p>
+            `;
+            containerReceitas.appendChild(divReceita);
+        });
+}
+
+async function adicionarReceita(receita) {
+    const { data, error } = await supabase
+        .from('receitas')
+        .insert([
+            receita,
+        ]);
+
+    if (error) {
+        console.error('Erro ao adicionar receita:', error);
+    } else {
+        console.log('Receita adicionada com sucesso:', data);
+        carregarReceitas();
+    }
+}
+
+document.getElementById('enviar-receita').addEventListener('click', () => {
+    const titulo = document.getElementById('titulo').value.trim();
+    const ingredientes = document.getElementById('ingredientes').value.trim();
+    const instrucoes = document.getElementById('instrucoes').value.trim();
+    const categoria = document.getElementById('categoria').value.trim();
+    const autor = document.getElementById('autor').value.trim();
+
+    if (titulo && ingredientes && instrucoes && categoria && autor) {
+        const receita = {
+            titulo,
+            ingredientes,
+            instrucoes,
+            categoria,
+            autor,
+            criado_em: new Date().toISOString()
+        };
+        adicionarReceita(receita);
+        limparFormulario();
+    } else {
+        alert('Por favor, preencha todos os campos corretamente.');
+    }
+});
+
+function limparFormulario() {
+    document.getElementById('titulo').value = '';
+    document.getElementById('ingredientes').value = '';
+    document.getElementById('instrucoes').value = '';
+    document.getElementById('categoria').value = '';
+    document.getElementById('autor').value = '';
+}
+
+// Carregar receitas ao iniciar
+carregarReceitas();
+
