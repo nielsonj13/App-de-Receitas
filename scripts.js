@@ -16,9 +16,9 @@ document.getElementById('recipe-form').addEventListener('submit', async function
     const ingredientes = document.getElementById('ingredientes').value;
     const instrucoes = document.getElementById('instrucoes').value;
     const categoria = document.getElementById('categoria').value;
-    const autor = document.getElementById('autor').value;
 
-    const recipe = { nome: titulo, ingredientes, modoPreparo: instrucoes, categoria, autor };
+
+    const recipe = { titulo, ingredientes, instrucoes, categoria};
 
     if (id) {
         await updateRecipe(id, recipe);
@@ -98,11 +98,11 @@ function updateRecipesList(recipes) {
     recipes.forEach(recipe => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <strong>Título:</strong> ${recipe.nome}<br>
+            <strong>Título:</strong> ${recipe.titulo}<br>
             <strong>Ingredientes:</strong> ${recipe.ingredientes}<br>
-            <strong>Instruções:</strong> ${recipe.modoPreparo}<br>
+            <strong>Instruções:</strong> ${recipe.instrucoes}<br>
             <strong>Categoria:</strong> ${recipe.categoria}<br>
-            <strong>Autor:</strong> ${recipe.autor}<br>
+            
         `;
         li.appendChild(createEditButton(recipe));
         li.appendChild(createDeleteButton(recipe.id));
@@ -116,11 +116,10 @@ function createEditButton(recipe) {
     button.className = 'editar-receita';
     button.onclick = () => {
         document.getElementById('recipe-id').value = recipe.id;
-        document.getElementById('titulo').value = recipe.nome;
+        document.getElementById('titulo').value = recipe.titulo;
         document.getElementById('ingredientes').value = recipe.ingredientes;
-        document.getElementById('instrucoes').value = recipe.modoPreparo;
+        document.getElementById('instrucoes').value = recipe.instrucoes;
         document.getElementById('categoria').value = recipe.categoria;
-        document.getElementById('autor').value = recipe.autor;
         document.getElementById('enviar-receita').style.display = 'none';
         document.getElementById('atualizar-receita').style.display = 'inline-block';
     };
