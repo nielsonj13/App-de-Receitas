@@ -24,40 +24,47 @@ body {
     flex-direction: column;
 }
 
-#formulario-receita select {
+#formulario-receita select,
+#formulario-receita input,
+#formulario-receita textarea {
     margin-bottom: 10px;
     padding: 10px;
     font-size: 1em;
     border: 1px solid #ddd;
     border-radius: 3px;
-    width: 100%;
     box-sizing: border-box; /* Garante que o padding não afete a largura total do elemento */
 }
 
-
-#formulario-receita input, #formulario-receita textarea {
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #ddd;
-    border-radius: 3px;
+#formulario-receita select {
+    width: 100%;
 }
 
-#enviar-receita, #atualizar-receita {
+#enviar-receita,
+#atualizar-receita {
     padding: 10px;
     font-size: 1em;
     border: none;
     color: white;
     cursor: pointer;
     border-radius: 3px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease; /* Transição suave para cor de fundo */
 }
 
 #enviar-receita {
     background: #28a745;
 }
 
+#enviar-receita:hover {
+    background: #218838;
+}
+
 #atualizar-receita {
     background: #ffc107;
+}
+
+#atualizar-receita:hover {
+    background: #e0a800;
 }
 
 #pesquisa {
@@ -72,7 +79,7 @@ body {
     width: 100%;
 }
 
-#receitas {
+#recipes-list {
     margin-top: 20px;
 }
 
@@ -82,6 +89,7 @@ body {
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 3px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
 .receita h2 {
@@ -99,6 +107,7 @@ button {
     border: none;
     cursor: pointer;
     border-radius: 3px;
+    transition: background-color 0.3s ease; /* Transição suave para cor de fundo */
 }
 
 .editar-receita {
@@ -106,7 +115,34 @@ button {
     color: white;
 }
 
+.editar-receita:hover {
+    background: #e0a800;
+}
+
 .excluir-receita {
     background: #dc3545;
     color: white;
+}
+
+.excluir-receita:hover {
+    background: #c82333;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    #app {
+        width: 90%;
+    }
+
+    #formulario-receita select,
+    #formulario-receita input,
+    #formulario-receita textarea {
+        font-size: 0.9em;
+    }
+
+    #enviar-receita,
+    #atualizar-receita {
+        font-size: 0.9em;
+        padding: 8px;
+    }
 }

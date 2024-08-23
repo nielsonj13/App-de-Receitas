@@ -8,7 +8,7 @@ const headers = {
 };
 
 // Função para adicionar ou atualizar uma receita
-document.getElementById('recipe-form').addEventListener('submit', async function (e) {
+document.getElementById('formulario-receita').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const id = document.getElementById('recipe-id').value;
@@ -17,18 +17,28 @@ document.getElementById('recipe-form').addEventListener('submit', async function
     const instrucoes = document.getElementById('instrucoes').value;
     const categoria = document.getElementById('categoria').value;
 
-
-    const recipe = { titulo, ingredientes, instrucoes, categoria};
-
-    if (id) {
-        await updateRecipe(id, recipe);
-    } else {
-        await saveRecipe(recipe);
+    if (!titulo || !ingredientes || !instrucoes || !categoria) {
+        alert('Por favor, preencha todos os campos.');
+        return;
     }
 
-    document.getElementById('recipe-form').reset();
-    document.getElementById('atualizar-receita').style.display = 'none';
-    fetchRecipes();
+    const recipe = { titulo, ingredientes, instrucoes, categoria };
+
+    try {
+        if (id) {
+            await updateRecipe(id, recipe);
+        } else {
+            await saveRecipe(recipe);
+        }
+
+        document.getElementById('formulario-receita').reset();
+        document.getElementById('enviar-receita').style.display = 'inline-block';
+        document.getElementById('atualizar-receita').style.display = 'none';
+        fetchRecipes();
+    } catch (error) {
+        console.error('Erro ao salvar receita:', error);
+        alert('Erro ao salvar receita. Veja o console para mais detalhes.');
+    }
 });
 
 // Função para salvar uma nova receita
@@ -45,7 +55,7 @@ async function saveRecipe(recipe) {
             throw new Error(`Erro ao adicionar receita: ${error}`);
         }
 
-        console.log('Recipe saved successfully');
+        console.log('Receita salva com sucesso');
     } catch (error) {
         console.error('Erro ao salvar receita:', error);
     }
@@ -65,7 +75,7 @@ async function updateRecipe(id, recipe) {
             throw new Error(`Erro ao atualizar receita: ${error}`);
         }
 
-        console.log('Recipe updated successfully');
+        console.log('Receita atualizada com sucesso');
     } catch (error) {
         console.error('Erro ao atualizar receita:', error);
     }
@@ -84,7 +94,7 @@ async function fetchRecipes() {
         }
 
         const recipes = await response.json();
-        console.log('Recipes fetched:', recipes);
+        console.log('Receitas buscadas:', recipes);
         updateRecipesList(recipes);
     } catch (error) {
         console.error('Erro ao buscar receitas:', error);
@@ -97,12 +107,12 @@ function updateRecipesList(recipes) {
     recipesList.innerHTML = '';
     recipes.forEach(recipe => {
         const li = document.createElement('li');
+        li.className = 'receita';
         li.innerHTML = `
             <strong>Título:</strong> ${recipe.titulo}<br>
             <strong>Ingredientes:</strong> ${recipe.ingredientes}<br>
             <strong>Instruções:</strong> ${recipe.instrucoes}<br>
             <strong>Categoria:</strong> ${recipe.categoria}<br>
-            
         `;
         li.appendChild(createEditButton(recipe));
         li.appendChild(createDeleteButton(recipe.id));
@@ -149,7 +159,7 @@ async function deleteRecipe(id) {
             throw new Error(`Erro ao deletar receita: ${error}`);
         }
 
-        console.log('Recipe deleted successfully');
+        console.log('Receita deletada com sucesso');
     } catch (error) {
         console.error('Erro ao deletar receita:', error);
     }
