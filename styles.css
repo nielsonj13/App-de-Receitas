@@ -24,6 +24,17 @@ body {
     flex-direction: column;
 }
 
+#formulario-receita select {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    width: 100%;
+    box-sizing: border-box; /* Garante que o padding não afete a largura total do elemento */
+}
+
+
 #formulario-receita input, #formulario-receita textarea {
     margin-bottom: 10px;
     padding: 10px;
@@ -36,10 +47,13 @@ body {
     padding: 10px;
     font-size: 1em;
     border: none;
-    background: #28a745;
     color: white;
     cursor: pointer;
     border-radius: 3px;
+}
+
+#enviar-receita {
+    background: #28a745;
 }
 
 #atualizar-receita {

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplicativo de Receitas</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.22.8/dist/umd/supabase.min.js"></script>
 </head>
 <body>
     <div id="app">
@@ -14,16 +13,23 @@
             <input type="text" id="titulo" placeholder="Título">
             <input type="text" id="ingredientes" placeholder="Ingredientes">
             <textarea id="instrucoes" placeholder="Instruções"></textarea>
-            <input type="text" id="categoria" placeholder="Categoria">
+                <select id="category" required>
+                    <option value="">Selecione a categoria</option>
+                    <option value="entrada">Entrada</option>
+                    <option value="prato_principal">Prato Principal</option>
+                    <option value="sobremesa">Sobremesa</option>
+                </select>
             <input type="text" id="autor" placeholder="Autor">
             <button id="enviar-receita">Enviar Receita</button>
             <button id="atualizar-receita" style="display: none;">Atualizar Receita</button>
         </div>
         <div id="pesquisa">
             <input type="text" id="pesquisar" placeholder="Pesquisar receitas...">
-        </div>
-        <div id="receitas"></div>
-    </div>
+            <div id="recipes-list">
+                <h2>Lista de Receitas</h2>
+                <button onclick="fetchRecipes()" class="refresh-button">Atualizar Lista</button>
+                <ul id="recipes"></ul>
+            </div>
     <script src="scripts.js"></script>
 </body>
 </html>

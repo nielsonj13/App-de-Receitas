@@ -1,232 +1,160 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const botaoEnviar = document.getElementById('enviar-receita');
-    const botaoAtualizar = document.getElementById('atualizar-receita');
-    const campoPesquisa = document.getElementById('pesquisar');
-    let indiceEdicao = null;
+const apiUrl = 'https://hlnwrzmtwhqyjfekehqz.supabase.co/rest/v1/receitas';
+const apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhsbndyem10d2hxeWpmZWtlaHF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQyNDUwMzQsImV4cCI6MjAzOTgyMTAzNH0.Ek8lmWZNFQ-4aKb2Y_d_BI83fDRdJsDngTcNGRmDous';
 
-    botaoEnviar.addEventListener('click', () => {
-        const titulo = document.getElementById('titulo').value.trim();
-        const ingredientes = document.getElementById('ingredientes').value.trim();
-        const instrucoes = document.getElementById('instrucoes').value.trim();
-        const categoria = document.getElementById('categoria').value.trim();
-        const autor = document.getElementById('autor').value.trim();
+const headers = {
+    'Content-Type': 'application/json',
+    'apikey': apiKey,
+    'Authorization': `Bearer ${apiKey}`
+};
 
-        if (titulo && ingredientes && instrucoes && categoria && autor) {
-            const receita = { titulo, ingredientes, instrucoes, categoria, autor };
-            adicionarReceita(receita);
-            carregarReceitas();
-            limparFormulario();
-        } else {
-            alert('Por favor, preencha todos os campos corretamente.');
-        }
-    });
+// Função para adicionar ou atualizar uma receita
+document.getElementById('recipe-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-    botaoAtualizar.addEventListener('click', () => {
-        const titulo = document.getElementById('titulo').value.trim();
-        const ingredientes = document.getElementById('ingredientes').value.trim();
-        const instrucoes = document.getElementById('instrucoes').value.trim();
-        const categoria = document.getElementById('categoria').value.trim();
-        const autor = document.getElementById('autor').value.trim();
+    const id = document.getElementById('recipe-id').value;
+    const titulo = document.getElementById('titulo').value;
+    const ingredientes = document.getElementById('ingredientes').value;
+    const instrucoes = document.getElementById('instrucoes').value;
+    const categoria = document.getElementById('categoria').value;
+    const autor = document.getElementById('autor').value;
 
-        if (titulo && ingredientes && instrucoes && categoria && autor) {
-            const receita = { titulo, ingredientes, instrucoes, categoria, autor };
-            atualizarReceita(indiceEdicao, receita);
-            carregarReceitas();
-            limparFormulario();
-            indiceEdicao = null;
-            botaoEnviar.style.display = 'block';
-            botaoAtualizar.style.display = 'none';
-        } else {
-            alert('Por favor, preencha todos os campos corretamente.');
-        }
-    });
+    const recipe = { nome: titulo, ingredientes, modoPreparo: instrucoes, categoria, autor };
 
-    campoPesquisa.addEventListener('input', () => {
-        carregarReceitas();
-    });
-
-    function adicionarReceita(receita) {
-        let receitas = obterReceitas();
-        receitas.push(receita);
-        localStorage.setItem('receitas', JSON.stringify(receitas));
+    if (id) {
+        await updateRecipe(id, recipe);
+    } else {
+        await saveRecipe(recipe);
     }
 
-    function obterReceitas() {
-        return localStorage.getItem('receitas') ? JSON.parse(localStorage.getItem('receitas')) : [];
-    }
-
-    function carregarReceitas() {
-        const receitas = obterReceitas();
-        const termoPesquisa = campoPesquisa.value.trim().toLowerCase();
-        const containerReceitas = document.getElementById('receitas');
-        containerReceitas.innerHTML = '';
-        const receitasFiltradas = receitas.filter(receita =>
-            receita.titulo.toLowerCase().includes(termoPesquisa) ||
-            receita.ingredientes.toLowerCase().includes(termoPesquisa) ||
-            receita.instrucoes.toLowerCase().includes(termoPesquisa) ||
-            receita.categoria.toLowerCase().includes(termoPesquisa) ||
-            receita.autor.toLowerCase().includes(termoPesquisa)
-        );
-        receitasFiltradas.forEach((receita, indice) => {
-            const divReceita = document.createElement('div');
-            divReceita.classList.add('receita');
-            divReceita.innerHTML = `
-                <h2>${receita.titulo}</h2>
-                <p><strong>Ingredientes:</strong> ${receita.ingredientes}</p>
-                <p><strong>Instruções:</strong> ${receita.instrucoes}</p>
-                <p><strong>Categoria:</strong> ${receita.categoria}</p>
-                <p><strong>Autor:</strong> ${receita.autor}</p>
-                <button class="editar-receita" data-indice="${indice}">Editar Receita</button>
-                <button class="excluir-receita" data-indice="${indice}">Excluir Receita</button>
-            `;
-            containerReceitas.appendChild(divReceita);
-        });
-
-        const botoesExcluir = document.querySelectorAll('.excluir-receita');
-        botoesExcluir.forEach(botao => {
-            botao.addEventListener('click', (evento) => {
-                const indice = evento.target.getAttribute('data-indice');
-                excluirReceita(indice);
-                carregarReceitas();
-            });
-        });
-
-        const botoesEditar = document.querySelectorAll('.editar-receita');
-        botoesEditar.forEach(botao => {
-            botao.addEventListener('click', (evento) => {
-                const indice = evento.target.getAttribute('data-indice');
-                editarReceita(indice);
-            });
-        });
-    }
-
-    function excluirReceita(indice) {
-        let receitas = obterReceitas();
-        receitas.splice(indice, 1);
-        localStorage.setItem('receitas', JSON.stringify(receitas));
-    }
-
-    function editarReceita(indice) {
-        let receitas = obterReceitas();
-        const receita = receitas[indice];
-
-        document.getElementById('titulo').value = receita.titulo;
-        document.getElementById('ingredientes').value = receita.ingredientes;
-        document.getElementById('instrucoes').value = receita.instrucoes;
-        document.getElementById('categoria').value = receita.categoria;
-        document.getElementById('autor').value = receita.autor;
-
-        indiceEdicao = indice;
-
-        botaoEnviar.style.display = 'none';
-        botaoAtualizar.style.display = 'block';
-    }
-
-    function atualizarReceita(indice, receitaAtualizada) {
-        let receitas = obterReceitas();
-        receitas[indice] = receitaAtualizada;
-        localStorage.setItem('receitas', JSON.stringify(receitas));
-    }
-
-    function limparFormulario() {
-        document.getElementById('titulo').value = '';
-        document.getElementById('ingredientes').value = '';
-        document.getElementById('instrucoes').value = '';
-        document.getElementById('categoria').value = '';
-        document.getElementById('autor').value = '';
-    }
-
-    carregarReceitas();
+    document.getElementById('recipe-form').reset();
+    document.getElementById('atualizar-receita').style.display = 'none';
+    fetchRecipes();
 });
 
-
-// Inicializando o Supabase
-const SUPABASE_URL = 'https://hlnwrzmtwhqyjfekehqz.supabase.co'; // substitua pelo URL do seu projeto
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhsbndyem10d2hxeWpmZWtlaHF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQyNDUwMzQsImV4cCI6MjAzOTgyMTAzNH0.Ek8lmWZNFQ-4aKb2Y_d_BI83fDRdJsDngTcNGRmDous'; // substitua pela sua chave de API
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-async function carregarReceitas() {
-    const { data: receitas, error } = await supabase
-        .from('receitas')
-        .select('*');
-
-    if (error) {
-        console.error('Erro ao carregar receitas:', error);
-        return;
-    }
-
-    const termoPesquisa = document.getElementById('pesquisar').value.trim().toLowerCase();
-    const containerReceitas = document.getElementById('receitas');
-    containerReceitas.innerHTML = '';
-
-    receitas
-        .filter(receita =>
-            receita.titulo.toLowerCase().includes(termoPesquisa) ||
-            receita.ingredientes.toLowerCase().includes(termoPesquisa) ||
-            receita.instrucoes.toLowerCase().includes(termoPesquisa) ||
-            receita.categoria.toLowerCase().includes(termoPesquisa) ||
-            receita.autor.toLowerCase().includes(termoPesquisa)
-        )
-        .forEach((receita) => {
-            const divReceita = document.createElement('div');
-            divReceita.classList.add('receita');
-            divReceita.innerHTML = `
-                <h2>${receita.titulo}</h2>
-                <p><strong>Ingredientes:</strong> ${receita.ingredientes}</p>
-                <p><strong>Instruções:</strong> ${receita.instrucoes}</p>
-                <p><strong>Categoria:</strong> ${receita.categoria}</p>
-                <p><strong>Autor:</strong> ${receita.autor}</p>
-            `;
-            containerReceitas.appendChild(divReceita);
+// Função para salvar uma nova receita
+async function saveRecipe(recipe) {
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify(recipe)
         });
-}
 
-async function adicionarReceita(receita) {
-    const { data, error } = await supabase
-        .from('receitas')
-        .insert([
-            receita,
-        ]);
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Erro ao adicionar receita: ${error}`);
+        }
 
-    if (error) {
-        console.error('Erro ao adicionar receita:', error);
-    } else {
-        console.log('Receita adicionada com sucesso:', data);
-        carregarReceitas();
+        console.log('Recipe saved successfully');
+    } catch (error) {
+        console.error('Erro ao salvar receita:', error);
     }
 }
 
-document.getElementById('enviar-receita').addEventListener('click', () => {
-    const titulo = document.getElementById('titulo').value.trim();
-    const ingredientes = document.getElementById('ingredientes').value.trim();
-    const instrucoes = document.getElementById('instrucoes').value.trim();
-    const categoria = document.getElementById('categoria').value.trim();
-    const autor = document.getElementById('autor').value.trim();
+// Função para atualizar uma receita
+async function updateRecipe(id, recipe) {
+    try {
+        const response = await fetch(`${apiUrl}?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: headers,
+            body: JSON.stringify(recipe)
+        });
 
-    if (titulo && ingredientes && instrucoes && categoria && autor) {
-        const receita = {
-            titulo,
-            ingredientes,
-            instrucoes,
-            categoria,
-            autor,
-            criado_em: new Date().toISOString()
-        };
-        adicionarReceita(receita);
-        limparFormulario();
-    } else {
-        alert('Por favor, preencha todos os campos corretamente.');
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Erro ao atualizar receita: ${error}`);
+        }
+
+        console.log('Recipe updated successfully');
+    } catch (error) {
+        console.error('Erro ao atualizar receita:', error);
     }
-});
-
-function limparFormulario() {
-    document.getElementById('titulo').value = '';
-    document.getElementById('ingredientes').value = '';
-    document.getElementById('instrucoes').value = '';
-    document.getElementById('categoria').value = '';
-    document.getElementById('autor').value = '';
 }
 
-// Carregar receitas ao iniciar
-carregarReceitas();
+// Função para buscar receitas
+async function fetchRecipes() {
+    try {
+        const response = await fetch(apiUrl, {
+            headers: headers
+        });
 
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Erro ao buscar receitas: ${error}`);
+        }
+
+        const recipes = await response.json();
+        console.log('Recipes fetched:', recipes);
+        updateRecipesList(recipes);
+    } catch (error) {
+        console.error('Erro ao buscar receitas:', error);
+    }
+}
+
+// Função para atualizar a lista de receitas
+function updateRecipesList(recipes) {
+    const recipesList = document.getElementById('recipes');
+    recipesList.innerHTML = '';
+    recipes.forEach(recipe => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <strong>Título:</strong> ${recipe.nome}<br>
+            <strong>Ingredientes:</strong> ${recipe.ingredientes}<br>
+            <strong>Instruções:</strong> ${recipe.modoPreparo}<br>
+            <strong>Categoria:</strong> ${recipe.categoria}<br>
+            <strong>Autor:</strong> ${recipe.autor}<br>
+        `;
+        li.appendChild(createEditButton(recipe));
+        li.appendChild(createDeleteButton(recipe.id));
+        recipesList.appendChild(li);
+    });
+}
+
+function createEditButton(recipe) {
+    const button = document.createElement('button');
+    button.textContent = 'Editar';
+    button.className = 'editar-receita';
+    button.onclick = () => {
+        document.getElementById('recipe-id').value = recipe.id;
+        document.getElementById('titulo').value = recipe.nome;
+        document.getElementById('ingredientes').value = recipe.ingredientes;
+        document.getElementById('instrucoes').value = recipe.modoPreparo;
+        document.getElementById('categoria').value = recipe.categoria;
+        document.getElementById('autor').value = recipe.autor;
+        document.getElementById('enviar-receita').style.display = 'none';
+        document.getElementById('atualizar-receita').style.display = 'inline-block';
+    };
+    return button;
+}
+
+function createDeleteButton(id) {
+    const button = document.createElement('button');
+    button.textContent = 'Remover';
+    button.className = 'excluir-receita';
+    button.onclick = async () => {
+        await deleteRecipe(id);
+        fetchRecipes();
+    };
+    return button;
+}
+
+async function deleteRecipe(id) {
+    try {
+        const response = await fetch(`${apiUrl}?id=eq.${id}`, {
+            method: 'DELETE',
+            headers: headers
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Erro ao deletar receita: ${error}`);
+        }
+
+        console.log('Recipe deleted successfully');
+    } catch (error) {
+        console.error('Erro ao deletar receita:', error);
+    }
+}
+
+// Carregar receitas ao iniciar a página
+window.onload = fetchRecipes;
