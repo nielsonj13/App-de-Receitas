@@ -7,11 +7,10 @@ const headers = {
     'Authorization': `Bearer ${apiKey}`
 };
 
-// Função para adicionar ou atualizar uma receita
+// Função para adicionar uma receita
 document.getElementById('formulario-receita').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const id = document.getElementById('recipe-id').value;
     const titulo = document.getElementById('titulo').value;
     const ingredientes = document.getElementById('ingredientes').value;
     const instrucoes = document.getElementById('instrucoes').value;
@@ -25,15 +24,8 @@ document.getElementById('formulario-receita').addEventListener('submit', async f
     const recipe = { titulo, ingredientes, instrucoes, categoria };
 
     try {
-        if (id) {
-            await updateRecipe(id, recipe);
-        } else {
-            await saveRecipe(recipe);
-        }
-
+        await saveRecipe(recipe);
         document.getElementById('formulario-receita').reset();
-        document.getElementById('enviar-receita').style.display = 'inline-block';
-        document.getElementById('atualizar-receita').style.display = 'none';
         fetchRecipes();
     } catch (error) {
         console.error('Erro ao salvar receita:', error);
@@ -58,26 +50,6 @@ async function saveRecipe(recipe) {
         console.log('Receita salva com sucesso');
     } catch (error) {
         console.error('Erro ao salvar receita:', error);
-    }
-}
-
-// Função para atualizar uma receita
-async function updateRecipe(id, recipe) {
-    try {
-        const response = await fetch(`${apiUrl}?id=eq.${id}`, {
-            method: 'PATCH',
-            headers: headers,
-            body: JSON.stringify(recipe)
-        });
-
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`Erro ao atualizar receita: ${error}`);
-        }
-
-        console.log('Receita atualizada com sucesso');
-    } catch (error) {
-        console.error('Erro ao atualizar receita:', error);
     }
 }
 
@@ -114,28 +86,12 @@ function updateRecipesList(recipes) {
             <strong>Instruções:</strong> ${recipe.instrucoes}<br>
             <strong>Categoria:</strong> ${recipe.categoria}<br>
         `;
-        li.appendChild(createEditButton(recipe));
         li.appendChild(createDeleteButton(recipe.id));
         recipesList.appendChild(li);
     });
 }
 
-function createEditButton(recipe) {
-    const button = document.createElement('button');
-    button.textContent = 'Editar';
-    button.className = 'editar-receita';
-    button.onclick = () => {
-        document.getElementById('recipe-id').value = recipe.id;
-        document.getElementById('titulo').value = recipe.titulo;
-        document.getElementById('ingredientes').value = recipe.ingredientes;
-        document.getElementById('instrucoes').value = recipe.instrucoes;
-        document.getElementById('categoria').value = recipe.categoria;
-        document.getElementById('enviar-receita').style.display = 'none';
-        document.getElementById('atualizar-receita').style.display = 'inline-block';
-    };
-    return button;
-}
-
+// Função para criar botão de exclusão
 function createDeleteButton(id) {
     const button = document.createElement('button');
     button.textContent = 'Remover';
